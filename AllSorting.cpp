@@ -21,7 +21,7 @@ void bubble_sort2(int *a,int n){
 }
 
 void selection_sort(int *a,int n){
-  //isme i ko  n-1 tk chalange kyuni j warna out of boind nikal jayega
+  //isme i ko  n-1 tk chalange kyuni j warna out of bound  nikal jayega
 
   for (int i = 0;i<n-1;i++ ){
     int min = i ;
