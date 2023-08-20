@@ -3,19 +3,30 @@ using namespace std;
 
 void bubble_sort(int *a,int n){
   for (int i = 0;i<n-1;i++){
+    bool swapped = false;
     for(int j = i+1;j<n;j++){
       if(a[i]>a[j]){
+        swapped = true;
         swap(a[i],a[j]);
          }
     }
+    if (swapped == false ){
+      //array is now sorted                                                   //OPTIMISED BUBBLE SORT 
+      break;
   }
 }
 void bubble_sort2(int *a,int n){
   for (int i = 1;i<n;i++){
+      bool swapped = false;
     for(int j = 0;j<n-i;j++){
       if(a[j]>a[j+1]){
+        swapped = true;
         swap(a[j+1],a[j]);
          }
+    }
+    if (swapped == false ){
+      //array is now sorted                                                   //OPTIMISED BUBBLE SORT 
+      break;
     }
   }
 }
