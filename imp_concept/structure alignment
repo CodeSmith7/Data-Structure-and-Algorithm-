@@ -1,0 +1,17 @@
+#include <iostream>
+
+using namespace std;
+
+
+struct s {
+    char x;
+    char y;
+    double d;
+    char z;
+}__attribute__((packed));
+int main()
+{   struct s ob;
+    cout<<sizeof(s)  << "   " << sizeof(ob);  // it will give output as 11 11 otherwise it will give 24 24 due to structure alignment 
+
+    return 0;
+}
