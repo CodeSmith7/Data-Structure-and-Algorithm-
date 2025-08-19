@@ -79,8 +79,8 @@ class DSU {
         return parent[node] = findUpar(parent[node]);
     }
     void unionByRank(int u , int v) {
-        int ulp_u = parent[u];
-        int ulp_v = parent[v];
+        int ulp_u = findUpar(u);
+        int ulp_v = findUpar(v);
         if (ulp_u  == ulp_v) return;
         
         if (rank[ulp_u] < rank[ulp_v]) {
