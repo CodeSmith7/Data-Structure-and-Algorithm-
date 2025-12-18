@@ -21,12 +21,12 @@ int longestBitonicSubsequence(vector<int>& nums, int n)
         }
 
 		for (int idx = n - 1; idx >= 0; idx--) {
-        for (int next = n - 1; next > idx; next--) {
-            if (nums[idx] > nums[next] && 1 + dp2[next] > dp2[idx]) {
-                dp2[idx] = 1 + dp2[next];
-            }
-        }
-}
+	        for (int next = n - 1; next > idx; next--) {
+	            if (nums[idx] > nums[next] && 1 + dp2[next] > dp2[idx]) {
+	                dp2[idx] = 1 + dp2[next];
+	            }
+	        }
+		}
 
 
 		for ( int i = 0; i < n; i++) {
