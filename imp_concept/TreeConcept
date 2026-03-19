@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree DSA — Complete Pattern Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#08090f;--bg2:#0d0f1a;--bg3:#111525;--bg4:#161c2e;--surface:#1a2038;
+  --border:#1e2840;--border2:#28345a;
+  --text:#dde4f8;--text2:#7a89b8;--text3:#3d4d78;
+  --accent:#3d8ef8;--accent2:#6aaafb;
+  --green:#27d97f;--green-d:rgba(39,217,127,.1);--green-b:rgba(39,217,127,.2);
+  --amber:#f5a623;--amber-d:rgba(245,166,35,.08);--amber-b:rgba(245,166,35,.2);
+  --red:#f05060;--red-d:rgba(240,80,96,.08);--red-b:rgba(240,80,96,.2);
+  --purple:#b07ef8;--teal:#22d4c0;--pink:#f472b6;
+  --r:8px;--r2:12px;--r3:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+
+/* ── HERO ── */
+.hero{
+  padding:52px 44px 44px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 70% at 80% 30%,rgba(61,142,248,.08) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 50% at 10% 80%,rgba(39,217,127,.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-tag{
+  font-family:'Fira Code',monospace;font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--accent);margin-bottom:14px;opacity:.9;
+}
+.hero-title{
+  font-size:clamp(30px,5vw,56px);font-weight:800;
+  line-height:1.04;letter-spacing:-1.5px;margin-bottom:12px;
+}
+.hero-title .hl{color:var(--green);}
+.hero-sub{
+  font-family:'Fira Code',monospace;font-size:12px;
+  color:var(--text2);margin-bottom:36px;max-width:560px;line-height:1.7;
+}
+
+/* Patterns nav */
+.nav-row{display:flex;gap:8px;flex-wrap:wrap;}
+.nav-chip{
+  padding:8px 16px;border-radius:99px;cursor:pointer;
+  font-family:'Fira Code',monospace;font-size:11px;font-weight:500;
+  border:1px solid var(--border2);
+  background:transparent;color:var(--text2);
+  transition:all .18s ease;
+}
+.nav-chip:hover{background:var(--bg4);color:var(--text);}
+.nav-chip.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.nav-chip.c2{}.nav-chip.c2.active{background:var(--green);border-color:var(--green);}
+.nav-chip.c3{}.nav-chip.c3.active{background:var(--purple);border-color:var(--purple);}
+.nav-chip.c4{}.nav-chip.c4.active{background:var(--amber);border-color:var(--amber);}
+.nav-chip.c5{}.nav-chip.c5.active{background:var(--teal);border-color:var(--teal);color:#000;}
+.nav-chip.c6{}.nav-chip.c6.active{background:var(--pink);border-color:var(--pink);}
+.nav-chip.c7{}.nav-chip.c7.active{background:var(--red);border-color:var(--red);}
+
+/* ── LAYOUT ── */
+.main{padding:40px 44px;max-width:1060px;}
+.section{display:none;animation:fadeUp .28s ease;}
+.section.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── SECTION HEADER ── */
+.sec-header{display:flex;align-items:flex-start;gap:18px;margin-bottom:28px;}
+.sec-num{
+  width:54px;height:54px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fira Code',monospace;font-size:18px;font-weight:700;flex-shrink:0;
+}
+.sn1{background:rgba(61,142,248,.15);color:var(--accent);border:1.5px solid rgba(61,142,248,.3);}
+.sn2{background:rgba(39,217,127,.12);color:var(--green);border:1.5px solid var(--green-b);}
+.sn3{background:rgba(176,126,248,.12);color:var(--purple);border:1.5px solid rgba(176,126,248,.3);}
+.sn4{background:rgba(245,166,35,.1);color:var(--amber);border:1.5px solid var(--amber-b);}
+.sn5{background:rgba(34,212,192,.1);color:var(--teal);border:1.5px solid rgba(34,212,192,.3);}
+.sn6{background:rgba(244,114,182,.1);color:var(--pink);border:1.5px solid rgba(244,114,182,.3);}
+.sn7{background:rgba(240,80,96,.1);color:var(--red);border:1.5px solid var(--red-b);}
+.sec-title{font-size:24px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px;}
+.sec-desc{font-family:'Fira Code',monospace;font-size:11.5px;color:var(--text2);line-height:1.5;}
+
+/* ── CARDS ── */
+.card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r3);padding:24px 28px;margin-bottom:18px;
+}
+.card-lbl{
+  font-family:'Fira Code',monospace;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:12px;font-weight:600;
+}
+.cl1{color:var(--accent);}
+.cl2{color:var(--green);}
+.cl3{color:var(--purple);}
+.cl4{color:var(--amber);}
+.cl5{color:var(--teal);}
+.cl6{color:var(--pink);}
+.cl7{color:var(--red);}
+.clg{color:var(--text3);}
+.card-title{font-size:16px;font-weight:700;margin-bottom:12px;letter-spacing:-.2px;}
+
+/* ── CODE ── */
+.code{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r2);padding:18px 20px;
+  font-family:'Fira Code',monospace;font-size:12.5px;
+  line-height:1.8;overflow-x:auto;margin:12px 0;
+  white-space:pre;
+}
+.kw{color:#79b8ff;}.tp{color:var(--green);}.fn{color:#f9c74f;}
+.cm{color:var(--text3);font-style:italic;}.nm{color:#f38ba8;}.st{color:#a9d4a2;}
+.op{color:var(--text2);}
+
+/* ── INSIGHT / WARN ── */
+.insight{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r2);padding:14px 18px;
+  font-family:'Fira Code',monospace;font-size:12px;
+  color:var(--text2);line-height:1.7;margin:12px 0;
+}
+.insight strong{color:var(--text);}
+.warn{
+  background:var(--amber-d);border:1px solid var(--amber-b);
+  border-radius:var(--r);padding:12px 16px;
+  font-family:'Fira Code',monospace;font-size:12px;
+  color:var(--amber);line-height:1.7;margin:10px 0;
+}
+.warn strong{font-weight:700;}
+.tip{
+  background:var(--green-d);border:1px solid var(--green-b);
+  border-radius:var(--r);padding:12px 16px;
+  font-family:'Fira Code',monospace;font-size:12px;
+  color:var(--green);line-height:1.7;margin:10px 0;
+}
+.tip strong{font-weight:700;}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;gap:9px;margin:12px 0;}
+.step{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:11px 14px;background:var(--bg3);
+  border-radius:var(--r);border:1px solid var(--border);
+}
+.step-n{
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;flex-shrink:0;
+  font-family:'Fira Code',monospace;
+}
+.step-text{font-family:'Fira Code',monospace;font-size:12px;color:var(--text2);line-height:1.6;}
+.step-text strong{color:var(--text);}
+.step-text code{background:var(--bg4);padding:1px 5px;border-radius:4px;color:var(--accent2);font-size:11px;}
+
+/* ── GRID ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+/* ── PROBLEMS LIST ── */
+.prob-list{display:flex;flex-direction:column;gap:8px;margin:12px 0;}
+.prob{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;background:var(--bg3);
+  border-radius:var(--r);border:1px solid var(--border);
+  transition:border-color .15s;
+}
+.prob:hover{border-color:var(--border2);}
+.diff{
+  font-family:'Fira Code',monospace;font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:4px;flex-shrink:0;
+}
+.dE{background:var(--green-d);color:var(--green);}
+.dM{background:var(--amber-d);color:var(--amber);}
+.dH{background:var(--red-d);color:var(--red);}
+.prob-name{font-size:13px;font-weight:600;}
+.prob-tag{margin-left:auto;font-family:'Fira Code',monospace;font-size:10px;color:var(--text3);}
+
+/* ── BADGES ── */
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.badge{
+  padding:4px 11px;border-radius:99px;border:1px solid;
+  font-family:'Fira Code',monospace;font-size:10px;font-weight:600;
+}
+.bt{background:rgba(61,142,248,.1);color:var(--accent2);border-color:rgba(61,142,248,.3);}
+.bs{background:rgba(176,126,248,.1);color:var(--purple);border-color:rgba(176,126,248,.3);}
+.bd{background:var(--red-d);color:var(--red);border-color:var(--red-b);}
+.bm{background:var(--amber-d);color:var(--amber);border-color:var(--amber-b);}
+.be{background:var(--green-d);color:var(--green);border-color:var(--green-b);}
+
+/* ── TREE VIZ ── */
+.tree-viz{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r2);padding:20px;margin:12px 0;
+  overflow-x:auto;
+}
+.tree-viz svg text{font-family:'Fira Code',monospace;}
+
+/* ── COMPARE ── */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;}
+@media(max-width:600px){.compare{grid-template-columns:1fr;}}
+.cmp-item{
+  padding:14px 16px;border-radius:var(--r2);
+  border:1px solid var(--border);background:var(--bg3);
+}
+.cmp-lbl{
+  font-family:'Fira Code',monospace;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:8px;font-weight:700;
+}
+.cmp-item p{font-family:'Fira Code',monospace;font-size:11.5px;color:var(--text2);line-height:1.6;}
+.cmp-item code{background:var(--bg);padding:1px 5px;border-radius:3px;color:var(--accent2);font-size:11px;}
+
+/* ── KEY BOX ── */
+.key-box{
+  background:linear-gradient(135deg,rgba(61,142,248,.07),rgba(176,126,248,.06));
+  border:1px solid rgba(61,142,248,.2);
+  border-radius:var(--r2);padding:16px 20px;margin:12px 0;
+}
+.kb-title{
+  font-family:'Fira Code',monospace;font-size:10px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;
+}
+.kb-text{font-family:'Fira Code',monospace;font-size:12px;color:var(--text2);line-height:1.7;}
+.kb-text strong{color:var(--text);}
+.kb-text code{background:var(--bg);padding:1px 5px;border-radius:4px;color:var(--accent2);font-size:11px;}
+
+/* ── PATTERN SUMMARY ── */
+.summary{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r3);padding:28px 32px;margin-top:32px;
+}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:18px;}
+.sum-card{
+  padding:16px 18px;border-radius:var(--r2);
+  border:1px solid var(--border);background:var(--bg3);
+}
+.sum-num{font-size:22px;font-weight:800;margin-bottom:4px;}
+.sum-title{font-size:12px;font-weight:700;margin-bottom:6px;}
+.sum-when{font-family:'Fira Code',monospace;font-size:10px;color:var(--text3);line-height:1.6;}
+
+@media(max-width:600px){.main,.hero{padding-left:20px;padding-right:20px;}}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">// DSA Master Series — Trees</div>
+  <div class="hero-title">Tree Patterns<br><span class="hl">Complete Guide</span></div>
+  <div class="hero-sub">
+    // 7 core patterns · C++ code · Intuition first · Real LC problems<br>
+    // Master these patterns → solve any new tree problem
+  </div>
+  <div class="nav-row">
+    <button class="nav-chip active" onclick="show(1,this)">01 · Traversals</button>
+    <button class="nav-chip c2" onclick="show(2,this)">02 · Recursion / DFS</button>
+    <button class="nav-chip c3" onclick="show(3,this)">03 · BFS / Level Order</button>
+    <button class="nav-chip c4" onclick="show(4,this)">04 · Path Problems</button>
+    <button class="nav-chip c5" onclick="show(5,this)">05 · BST Patterns</button>
+    <button class="nav-chip c6" onclick="show(6,this)">06 · Tree Construction</button>
+    <button class="nav-chip c7" onclick="show(7,this)">07 · LCA &amp; Ancestors</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════
+     PATTERN 1 — TRAVERSALS
+═══════════════════════════════════════════════ -->
+<div class="section active" id="s1">
+  <div class="sec-header">
+    <div class="sec-num sn1">01</div>
+    <div>
+      <div class="sec-title">Tree Traversals — The Foundation</div>
+      <div class="sec-desc">// Every tree problem is built on top of one of these 4 traversals</div>
+    </div>
+  </div>
+
+  <!-- Tree Visual -->
+  <div class="card">
+    <div class="card-lbl cl1">// Visual — Sample Tree</div>
+    <div class="tree-viz">
+      <svg width="100%" viewBox="0 0 500 200" style="max-height:200px;">
+        <!-- edges -->
+        <line x1="250" y1="40" x2="150" y2="100" stroke="#28345a" stroke-width="2"/>
+        <line x1="250" y1="40" x2="350" y2="100" stroke="#28345a" stroke-width="2"/>
+        <line x1="150" y1="100" x2="90" y2="160" stroke="#28345a" stroke-width="2"/>
+        <line x1="150" y1="100" x2="210" y2="160" stroke="#28345a" stroke-width="2"/>
+        <line x1="350" y1="100" x2="290" y2="160" stroke="#28345a" stroke-width="2"/>
+        <line x1="350" y1="100" x2="410" y2="160" stroke="#28345a" stroke-width="2"/>
+        <!-- nodes -->
+        <circle cx="250" cy="40" r="22" fill="#1a2038" stroke="#3d8ef8" stroke-width="2"/>
+        <circle cx="150" cy="100" r="22" fill="#1a2038" stroke="#27d97f" stroke-width="2"/>
+        <circle cx="350" cy="100" r="22" fill="#1a2038" stroke="#27d97f" stroke-width="2"/>
+        <circle cx="90" cy="160" r="22" fill="#1a2038" stroke="#b07ef8" stroke-width="2"/>
+        <circle cx="210" cy="160" r="22" fill="#1a2038" stroke="#b07ef8" stroke-width="2"/>
+        <circle cx="290" cy="160" r="22" fill="#1a2038" stroke="#b07ef8" stroke-width="2"/>
+        <circle cx="410" cy="160" r="22" fill="#1a2038" stroke="#b07ef8" stroke-width="2"/>
+        <!-- labels -->
+        <text x="250" y="45" text-anchor="middle" fill="#3d8ef8" font-size="14" font-weight="700">1</text>
+        <text x="150" y="105" text-anchor="middle" fill="#27d97f" font-size="14" font-weight="700">2</text>
+        <text x="350" y="105" text-anchor="middle" fill="#27d97f" font-size="14" font-weight="700">3</text>
+        <text x="90" y="165" text-anchor="middle" fill="#b07ef8" font-size="14" font-weight="700">4</text>
+        <text x="210" y="165" text-anchor="middle" fill="#b07ef8" font-size="14" font-weight="700">5</text>
+        <text x="290" y="165" text-anchor="middle" fill="#b07ef8" font-size="14" font-weight="700">6</text>
+        <text x="410" y="165" text-anchor="middle" fill="#b07ef8" font-size="14" font-weight="700">7</text>
+        <!-- role labels -->
+        <text x="282" y="32" fill="#3d4d78" font-size="10">Root</text>
+        <text x="118" y="92" fill="#3d4d78" font-size="10">L child</text>
+        <text x="358" y="92" fill="#3d4d78" font-size="10">R child</text>
+        <text x="58" y="152" fill="#3d4d78" font-size="10">Leaf</text>
+      </svg>
+    </div>
+    <div class="grid2" style="margin-top:12px;">
+      <div>
+        <div style="font-family:'Fira Code',monospace;font-size:11px;color:var(--text2);margin-bottom:6px;">Traversal results:</div>
+        <div class="code" style="font-size:11px;padding:12px 14px;">
+<span class="cm">// Inorder   (L → Root → R):</span> <span class="nm">4 2 5 1 6 3 7</span>
+<span class="cm">// Preorder  (Root → L → R):</span> <span class="nm">1 2 4 5 3 6 7</span>
+<span class="cm">// Postorder (L → R → Root):</span> <span class="nm">4 5 2 6 7 3 1</span>
+<span class="cm">// Level     (BFS by levels):</span> <span class="nm">1 | 2 3 | 4 5 6 7</span></div>
+      </div>
+      <div>
+        <div style="font-family:'Fira Code',monospace;font-size:11px;color:var(--text2);margin-bottom:6px;">When to use which:</div>
+        <div class="insight" style="margin:0;">
+          <strong>Inorder</strong> → BST gives sorted output<br>
+          <strong>Preorder</strong> → Serialize / copy tree<br>
+          <strong>Postorder</strong> → Delete tree, bottom-up calc<br>
+          <strong>Level</strong> → Level-wise problems
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- All 4 traversals code -->
+  <div class="card">
+    <div class="card-lbl cl1">// Node Structure + All Traversals</div>
+<div class="code"><span class="kw">struct</span> <span class="tp">TreeNode</span> {
+    <span class="kw">int</span> val;
+    <span class="tp">TreeNode</span> <span class="op">*</span>left, <span class="op">*</span>right;
+    <span class="tp">TreeNode</span>(<span class="kw">int</span> x) : val(x), left(<span class="nm">nullptr</span>), right(<span class="nm">nullptr</span>) {}
+};
+
+<span class="cm">// ── INORDER (L → Root → R) ─────────────────────────</span>
+<span class="kw">void</span> <span class="fn">inorder</span>(<span class="tp">TreeNode</span><span class="op">*</span> root, <span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;&amp;</span> res) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span>;
+    <span class="fn">inorder</span>(root<span class="op">-&gt;</span>left, res);
+    res.push_back(root<span class="op">-&gt;</span>val);       <span class="cm">// process AFTER left</span>
+    <span class="fn">inorder</span>(root<span class="op">-&gt;</span>right, res);
+}
+
+<span class="cm">// ── PREORDER (Root → L → R) ────────────────────────</span>
+<span class="kw">void</span> <span class="fn">preorder</span>(<span class="tp">TreeNode</span><span class="op">*</span> root, <span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;&amp;</span> res) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span>;
+    res.push_back(root<span class="op">-&gt;</span>val);       <span class="cm">// process BEFORE children</span>
+    <span class="fn">preorder</span>(root<span class="op">-&gt;</span>left, res);
+    <span class="fn">preorder</span>(root<span class="op">-&gt;</span>right, res);
+}
+
+<span class="cm">// ── POSTORDER (L → R → Root) ───────────────────────</span>
+<span class="kw">void</span> <span class="fn">postorder</span>(<span class="tp">TreeNode</span><span class="op">*</span> root, <span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;&amp;</span> res) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span>;
+    <span class="fn">postorder</span>(root<span class="op">-&gt;</span>left, res);
+    <span class="fn">postorder</span>(root<span class="op">-&gt;</span>right, res);
+    res.push_back(root<span class="op">-&gt;</span>val);       <span class="cm">// process AFTER both children</span>
+}
+
+<span class="cm">// ── ITERATIVE INORDER (using stack) ────────────────</span>
+<span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;</span> <span class="fn">inorderIter</span>(<span class="tp">TreeNode</span><span class="op">*</span> root) {
+    <span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;</span> res;
+    <span class="tp">stack</span><span class="op">&lt;</span><span class="tp">TreeNode</span><span class="op">*&gt;</span> st;
+    <span class="tp">TreeNode</span><span class="op">*</span> cur <span class="op">=</span> root;
+    <span class="kw">while</span> (cur || !st.empty()) {
+        <span class="kw">while</span> (cur) { st.push(cur); cur <span class="op">=</span> cur<span class="op">-&gt;</span>left; }
+        cur <span class="op">=</span> st.top(); st.pop();
+        res.push_back(cur<span class="op">-&gt;</span>val);
+        cur <span class="op">=</span> cur<span class="op">-&gt;</span>right;
+    }
+    <span class="kw">return</span> res;
+}</div>
+  </div>
+
+  <div class="key-box">
+    <div class="kb-title">🔑 The Golden Rule of Tree Traversal</div>
+    <div class="kb-text">
+      <strong>Every recursive tree function has this skeleton:</strong><br>
+      <code>if (!root) return BASE_CASE;</code> ← base case first, always<br>
+      Then decide: do you process root <strong>before</strong> (preorder), <strong>between</strong> (inorder), or <strong>after</strong> (postorder) the recursive calls?<br><br>
+      <strong>Most tree problems = choosing WHERE to put your logic in this skeleton.</strong>
+    </div>
+  </div>
+
+  <div class="prob-list">
+    <div class="prob"><span class="diff dE">EASY</span><span class="prob-name">LC 144 — Binary Tree Preorder Traversal</span><span class="prob-tag">preorder</span></div>
+    <div class="prob"><span class="diff dE">EASY</span><span class="prob-name">LC 94 — Binary Tree Inorder Traversal</span><span class="prob-tag">inorder</span></div>
+    <div class="prob"><span class="diff dE">EASY</span><span class="prob-name">LC 145 — Binary Tree Postorder Traversal</span><span class="prob-tag">postorder</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 173 — BST Iterator</span><span class="prob-tag">iterative inorder</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PATTERN 2 — RECURSION / DFS
+═══════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="sec-header">
+    <div class="sec-num sn2">02</div>
+    <div>
+      <div class="sec-title">Recursion / DFS — The Core Engine</div>
+      <div class="sec-desc">// 80% of tree problems are solved by choosing the right recursive return value</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl cl2">// The Two DFS Models</div>
+    <div class="compare">
+      <div class="cmp-item">
+        <div class="cmp-lbl" style="color:var(--green)">Model A — Return Up</div>
+        <p>Function <strong>returns a value</strong> computed from children. Parent uses the returned value.<br><br>
+        Use for: height, diameter, path sum, checking balanced, etc.<br><br>
+        Pattern: <code>int dfs(node) { L = dfs(left); R = dfs(right); return combine(L,R); }</code></p>
+      </div>
+      <div class="cmp-item">
+        <div class="cmp-lbl" style="color:var(--accent)">Model B — Pass Down</div>
+        <p>Function <strong>passes info downward</strong> via parameters. Leaf does the final check.<br><br>
+        Use for: path from root, sum to leaf, depth tracking, etc.<br><br>
+        Pattern: <code>void dfs(node, int acc) { dfs(left, acc+node->val); }</code></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Height / Depth -->
+  <div class="card">
+    <div class="card-lbl cl2">// Classic: Height, Depth, Diameter</div>
+<div class="code"><span class="cm">// ── HEIGHT of tree ─────────────────────────────────</span>
+<span class="kw">int</span> <span class="fn">height</span>(<span class="tp">TreeNode</span><span class="op">*</span> root) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span> <span class="nm">0</span>;                          <span class="cm">// null → height 0</span>
+    <span class="kw">int</span> L <span class="op">=</span> <span class="fn">height</span>(root<span class="op">-&gt;</span>left);
+    <span class="kw">int</span> R <span class="op">=</span> <span class="fn">height</span>(root<span class="op">-&gt;</span>right);
+    <span class="kw">return</span> <span class="nm">1</span> <span class="op">+</span> max(L, R);                        <span class="cm">// return UP the max</span>
+}
+
+<span class="cm">// ── DIAMETER (LC 543) ──────────────────────────────</span>
+<span class="cm">// Diameter at node = leftHeight + rightHeight</span>
+<span class="kw">int</span> ans <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">int</span> <span class="fn">dfs</span>(<span class="tp">TreeNode</span><span class="op">*</span> node) {
+    <span class="kw">if</span> (!node) <span class="kw">return</span> <span class="nm">0</span>;
+    <span class="kw">int</span> L <span class="op">=</span> <span class="fn">dfs</span>(node<span class="op">-&gt;</span>left);
+    <span class="kw">int</span> R <span class="op">=</span> <span class="fn">dfs</span>(node<span class="op">-&gt;</span>right);
+    ans <span class="op">=</span> max(ans, L <span class="op">+</span> R);                     <span class="cm">// update global max here</span>
+    <span class="kw">return</span> <span class="nm">1</span> <span class="op">+</span> max(L, R);                      <span class="cm">// return height upward</span>
+}
+
+<span class="cm">// ── BALANCED TREE (LC 110) ─────────────────────────</span>
+<span class="cm">// Return -1 if unbalanced, else return height</span>
+<span class="kw">int</span> <span class="fn">check</span>(<span class="tp">TreeNode</span><span class="op">*</span> node) {
+    <span class="kw">if</span> (!node) <span class="kw">return</span> <span class="nm">0</span>;
+    <span class="kw">int</span> L <span class="op">=</span> <span class="fn">check</span>(node<span class="op">-&gt;</span>left);
+    <span class="kw">int</span> R <span class="op">=</span> <span class="fn">check</span>(node<span class="op">-&gt;</span>right);
+    <span class="kw">if</span> (L <span class="op">==</span> <span class="op">-</span><span class="nm">1</span> || R <span class="op">==</span> <span class="op">-</span><span class="nm">1</span>) <span class="kw">return</span> <span class="op">-</span><span class="nm">1</span>;       <span class="cm">// propagate failure</span>
+    <span class="kw">if</span> (abs(L <span class="op">-</span> R) <span class="op">&gt;</span> <span class="nm">1</span>)     <span class="kw">return</span> <span class="op">-</span><span class="nm">1</span>;
+    <span class="kw">return</span> <span class="nm">1</span> <span class="op">+</span> max(L, R);
+}
+<span class="kw">bool</span> <span class="fn">isBalanced</span>(<span class="tp">TreeNode</span><span class="op">*</span> root) { <span class="kw">return</span> <span class="fn">check</span>(root) <span class="op">!=</span> <span class="op">-</span><span class="nm">1</span>; }</div>
+  </div>
+
+  <!-- Symmetric / Same tree -->
+  <div class="card">
+    <div class="card-lbl cl2">// Two-pointer DFS: Symmetric &amp; Same Tree</div>
+<div class="code"><span class="cm">// ── SAME TREE (LC 100) ─────────────────────────────</span>
+<span class="kw">bool</span> <span class="fn">isSameTree</span>(<span class="tp">TreeNode</span><span class="op">*</span> p, <span class="tp">TreeNode</span><span class="op">*</span> q) {
+    <span class="kw">if</span> (!p &amp;&amp; !q) <span class="kw">return</span> <span class="nm">true</span>;           <span class="cm">// both null → same</span>
+    <span class="kw">if</span> (!p || !q) <span class="kw">return</span> <span class="nm">false</span>;          <span class="cm">// one null → different</span>
+    <span class="kw">if</span> (p<span class="op">-&gt;</span>val <span class="op">!=</span> q<span class="op">-&gt;</span>val) <span class="kw">return</span> <span class="nm">false</span>; <span class="cm">// values differ</span>
+    <span class="kw">return</span> <span class="fn">isSameTree</span>(p<span class="op">-&gt;</span>left, q<span class="op">-&gt;</span>left)
+        &amp;&amp; <span class="fn">isSameTree</span>(p<span class="op">-&gt;</span>right, q<span class="op">-&gt;</span>right);
+}
+
+<span class="cm">// ── SYMMETRIC TREE (LC 101) ────────────────────────</span>
+<span class="kw">bool</span> <span class="fn">mirror</span>(<span class="tp">TreeNode</span><span class="op">*</span> L, <span class="tp">TreeNode</span><span class="op">*</span> R) {
+    <span class="kw">if</span> (!L &amp;&amp; !R) <span class="kw">return</span> <span class="nm">true</span>;
+    <span class="kw">if</span> (!L || !R) <span class="kw">return</span> <span class="nm">false</span>;
+    <span class="kw">return</span> L<span class="op">-&gt;</span>val <span class="op">==</span> R<span class="op">-&gt;</span>val
+        &amp;&amp; <span class="fn">mirror</span>(L<span class="op">-&gt;</span>left,  R<span class="op">-&gt;</span>right)  <span class="cm">// ← cross compare →</span>
+        &amp;&amp; <span class="fn">mirror</span>(L<span class="op">-&gt;</span>right, R<span class="op">-&gt;</span>left);
+}
+<span class="kw">bool</span> <span class="fn">isSymmetric</span>(<span class="tp">TreeNode</span><span class="op">*</span> root) {
+    <span class="kw">return</span> <span class="fn">mirror</span>(root<span class="op">-&gt;</span>left, root<span class="op">-&gt;</span>right);
+}</div>
+    <div class="tip"><strong>Two-tree pattern:</strong> When comparing two trees simultaneously, pass both nodes as parameters. Cross-compare children (left↔right) for mirror checks.</div>
+  </div>
+
+  <div class="prob-list">
+    <div class="prob"><span class="diff dE">EASY</span><span class="prob-name">LC 104 — Max Depth of Binary Tree</span><span class="prob-tag">return-up</span></div>
+    <div class="prob"><span class="diff dE">EASY</span><span class="prob-name">LC 110 — Balanced Binary Tree</span><span class="prob-tag">return -1 trick</span></div>
+    <div class="prob"><span class="diff dE">EASY</span><span class="prob-name">LC 543 — Diameter of Binary Tree</span><span class="prob-tag">global var</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 124 — Binary Tree Max Path Sum</span><span class="prob-tag">global max DFS</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 236 — Lowest Common Ancestor</span><span class="prob-tag">return node</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PATTERN 3 — BFS / LEVEL ORDER
+═══════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="sec-header">
+    <div class="sec-num sn3">03</div>
+    <div>
+      <div class="sec-title">BFS / Level Order — Queue Pattern</div>
+      <div class="sec-desc">// Process nodes level by level using a queue. The size trick is everything.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl cl3">// The BFS Template — Memorize This</div>
+<div class="code"><span class="cm">// ── LEVEL ORDER (LC 102) ───────────────────────────</span>
+<span class="tp">vector</span><span class="op">&lt;</span><span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;&gt;</span> <span class="fn">levelOrder</span>(<span class="tp">TreeNode</span><span class="op">*</span> root) {
+    <span class="tp">vector</span><span class="op">&lt;</span><span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;&gt;</span> result;
+    <span class="kw">if</span> (!root) <span class="kw">return</span> result;
+
+    <span class="tp">queue</span><span class="op">&lt;</span><span class="tp">TreeNode</span><span class="op">*&gt;</span> q;
+    q.push(root);
+
+    <span class="kw">while</span> (!q.empty()) {
+        <span class="kw">int</span> size <span class="op">=</span> q.size();          <span class="cm">// ← KEY: snapshot current level size</span>
+        <span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;</span> level;
+
+        <span class="kw">for</span> (<span class="kw">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> size; i++) {
+            <span class="tp">TreeNode</span><span class="op">*</span> node <span class="op">=</span> q.front(); q.pop();
+            level.push_back(node<span class="op">-&gt;</span>val);
+
+            <span class="kw">if</span> (node<span class="op">-&gt;</span>left)  q.push(node<span class="op">-&gt;</span>left);
+            <span class="kw">if</span> (node<span class="op">-&gt;</span>right) q.push(node<span class="op">-&gt;</span>right);
+        }
+        result.push_back(level);
+    }
+    <span class="kw">return</span> result;
+}</div>
+    <div class="key-box">
+      <div class="kb-title">🔑 The Size Trick</div>
+      <div class="kb-text">
+        Before processing each level, snapshot <code>int size = q.size()</code>. Loop exactly <code>size</code> times — you process exactly one level. New children pushed inside the loop belong to the <strong>next</strong> level. This cleanly separates levels.
+      </div>
+    </div>
+  </div>
+
+  <!-- BFS Variants -->
+  <div class="card">
+    <div class="card-lbl cl3">// BFS Variants — All use the same template</div>
+<div class="code"><span class="cm">// ── ZIGZAG LEVEL ORDER (LC 103) ────────────────────</span>
+<span class="cm">// Same BFS, but reverse every alternate level</span>
+<span class="kw">if</span> (leftToRight)
+    level.push_back(node<span class="op">-&gt;</span>val);
+<span class="kw">else</span>
+    level.insert(level.begin(), node<span class="op">-&gt;</span>val); <span class="cm">// prepend for reverse</span>
+leftToRight <span class="op">=</span> !leftToRight; <span class="cm">// flip after each level</span>
+
+<span class="cm">// ── RIGHT SIDE VIEW (LC 199) ───────────────────────</span>
+<span class="cm">// Last node of each level = right side view</span>
+<span class="kw">for</span> (<span class="kw">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> size; i++) {
+    <span class="tp">TreeNode</span><span class="op">*</span> node <span class="op">=</span> q.front(); q.pop();
+    <span class="kw">if</span> (i <span class="op">==</span> size <span class="op">-</span> <span class="nm">1</span>)  <span class="cm">// last node in level</span>
+        result.push_back(node<span class="op">-&gt;</span>val);
+    <span class="cm">/* push children as usual */</span>
+}
+
+<span class="cm">// ── LEVEL AVERAGES (LC 637) ────────────────────────</span>
+<span class="kw">double</span> sum <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> size; i++) {
+    sum <span class="op">+=</span> q.front()<span class="op">-&gt;</span>val; <span class="cm">/* pop & push children */</span>
+}
+result.push_back(sum <span class="op">/</span> size);
+
+<span class="cm">// ── MIN DEPTH (LC 111) ─────────────────────────────</span>
+<span class="cm">// First leaf node found in BFS = minimum depth</span>
+<span class="kw">int</span> depth <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">while</span> (!q.empty()) {
+    depth<span class="op">++</span>;
+    <span class="kw">int</span> sz <span class="op">=</span> q.size();
+    <span class="kw">for</span> (<span class="kw">int</span> i <span class="op">=</span> <span class="nm">0</span>; i <span class="op">&lt;</span> sz; i++) {
+        <span class="tp">TreeNode</span><span class="op">*</span> n <span class="op">=</span> q.front(); q.pop();
+        <span class="kw">if</span> (!n<span class="op">-&gt;</span>left &amp;&amp; !n<span class="op">-&gt;</span>right) <span class="kw">return</span> depth; <span class="cm">// leaf!</span>
+        <span class="cm">/* push children */</span>
+    }
+}</div>
+    <div class="warn"><strong>BFS vs DFS:</strong> Use BFS when the answer is close to the root (min depth, first occurrence by level). Use DFS when you need to go all the way to leaves (max depth, all paths).</div>
+  </div>
+
+  <div class="prob-list">
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 102 — Binary Tree Level Order Traversal</span><span class="prob-tag">BFS template</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 103 — Zigzag Level Order</span><span class="prob-tag">BFS + flip</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 199 — Binary Tree Right Side View</span><span class="prob-tag">last per level</span></div>
+    <div class="prob"><span class="diff dE">EASY</span><span class="prob-name">LC 637 — Average of Levels</span><span class="prob-tag">BFS sum</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 662 — Maximum Width of Binary Tree</span><span class="prob-tag">BFS + index</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PATTERN 4 — PATH PROBLEMS
+═══════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="sec-header">
+    <div class="sec-num sn4">04</div>
+    <div>
+      <div class="sec-title">Path Problems — Root-to-Leaf &amp; Any-to-Any</div>
+      <div class="sec-desc">// Two types: path must go root→leaf (pass-down) OR any node to any node (global max)</div>
+    </div>
+  </div>
+
+  <div class="compare">
+    <div class="cmp-item">
+      <div class="cmp-lbl" style="color:var(--amber)">Type 1 — Root to Leaf</div>
+      <p>Path starts at root, ends at leaf. <strong>Pass running sum downward</strong> as parameter. At leaf, compare with target.<br><br>
+      <code>dfs(node, currSum)</code><br>
+      Base: <code>if leaf → check currSum</code></p>
+    </div>
+    <div class="cmp-item">
+      <div class="cmp-lbl" style="color:var(--pink)">Type 2 — Any Node to Any</div>
+      <p>Path can start and end anywhere. <strong>At each node, consider it as the "highest point"</strong> of the path.<br><br>
+      <code>ans = max(ans, L + R + node->val)</code><br>
+      But <strong>return only one side upward</strong>.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl cl4">// Path Sum Templates</div>
+<div class="code"><span class="cm">// ── PATH SUM I (LC 112) — Does root→leaf path with sum exist? ──</span>
+<span class="kw">bool</span> <span class="fn">hasPathSum</span>(<span class="tp">TreeNode</span><span class="op">*</span> root, <span class="kw">int</span> target) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span> <span class="nm">false</span>;
+    <span class="kw">if</span> (!root<span class="op">-&gt;</span>left &amp;&amp; !root<span class="op">-&gt;</span>right)  <span class="cm">// leaf node</span>
+        <span class="kw">return</span> root<span class="op">-&gt;</span>val <span class="op">==</span> target;
+    <span class="kw">return</span> <span class="fn">hasPathSum</span>(root<span class="op">-&gt;</span>left,  target <span class="op">-</span> root<span class="op">-&gt;</span>val)
+        || <span class="fn">hasPathSum</span>(root<span class="op">-&gt;</span>right, target <span class="op">-</span> root<span class="op">-&gt;</span>val);
+}
+
+<span class="cm">// ── PATH SUM II (LC 113) — Return ALL root→leaf paths ──────────</span>
+<span class="kw">void</span> <span class="fn">dfs</span>(<span class="tp">TreeNode</span><span class="op">*</span> node, <span class="kw">int</span> rem,
+         <span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;&amp;</span> path, <span class="tp">vector</span><span class="op">&lt;</span><span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;&gt;&amp;</span> res) {
+    <span class="kw">if</span> (!node) <span class="kw">return</span>;
+    path.push_back(node<span class="op">-&gt;</span>val);             <span class="cm">// add to path</span>
+    <span class="kw">if</span> (!node<span class="op">-&gt;</span>left &amp;&amp; !node<span class="op">-&gt;</span>right &amp;&amp; rem <span class="op">==</span> node<span class="op">-&gt;</span>val)
+        res.push_back(path);                <span class="cm">// found a valid path</span>
+    <span class="fn">dfs</span>(node<span class="op">-&gt;</span>left,  rem <span class="op">-</span> node<span class="op">-&gt;</span>val, path, res);
+    <span class="fn">dfs</span>(node<span class="op">-&gt;</span>right, rem <span class="op">-</span> node<span class="op">-&gt;</span>val, path, res);
+    path.pop_back();                        <span class="cm">// ← BACKTRACK!</span>
+}
+
+<span class="cm">// ── MAX PATH SUM (LC 124) — Any node to any node ───────────────</span>
+<span class="kw">int</span> maxSum <span class="op">=</span> INT_MIN;
+<span class="kw">int</span> <span class="fn">dfs</span>(<span class="tp">TreeNode</span><span class="op">*</span> node) {
+    <span class="kw">if</span> (!node) <span class="kw">return</span> <span class="nm">0</span>;
+    <span class="kw">int</span> L <span class="op">=</span> max(<span class="nm">0</span>, <span class="fn">dfs</span>(node<span class="op">-&gt;</span>left));   <span class="cm">// discard negative branches</span>
+    <span class="kw">int</span> R <span class="op">=</span> max(<span class="nm">0</span>, <span class="fn">dfs</span>(node<span class="op">-&gt;</span>right));
+    maxSum <span class="op">=</span> max(maxSum, L <span class="op">+</span> R <span class="op">+</span> node<span class="op">-&gt;</span>val); <span class="cm">// node as peak</span>
+    <span class="kw">return</span> node<span class="op">-&gt;</span>val <span class="op">+</span> max(L, R);       <span class="cm">// can only return one side up</span>
+}</div>
+    <div class="warn"><strong>Backtracking in paths:</strong> When collecting all paths, always <code>path.pop_back()</code> after recursion. This undoes the choice — essential for exploring all branches.</div>
+  </div>
+
+  <div class="prob-list">
+    <div class="prob"><span class="diff dE">EASY</span><span class="prob-name">LC 112 — Path Sum</span><span class="prob-tag">root-to-leaf</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 113 — Path Sum II</span><span class="prob-tag">backtracking</span></div>
+    <div class="prob"><span class="diff dH">HARD</span><span class="prob-name">LC 124 — Binary Tree Max Path Sum</span><span class="prob-tag">any-to-any</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 437 — Path Sum III</span><span class="prob-tag">prefix sum in DFS</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 1448 — Count Good Nodes</span><span class="prob-tag">pass max downward</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PATTERN 5 — BST PATTERNS
+═══════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="sec-header">
+    <div class="sec-num sn5">05</div>
+    <div>
+      <div class="sec-title">BST Patterns — Use the Ordering Property</div>
+      <div class="sec-desc">// BST: left &lt; root &lt; right. Always exploit this — never brute force a BST.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl cl5">// BST Property: The Key Insight</div>
+    <div class="insight">
+      <strong>In a BST, at every node you can eliminate half the tree:</strong><br>
+      → target &lt; node.val → go LEFT only<br>
+      → target &gt; node.val → go RIGHT only<br>
+      → target == node.val → FOUND<br><br>
+      <strong>Inorder traversal of BST = sorted array.</strong> This is used in 30% of BST problems.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl cl5">// Core BST Operations</div>
+<div class="code"><span class="cm">// ── SEARCH (LC 700) ────────────────────────────────</span>
+<span class="tp">TreeNode</span><span class="op">*</span> <span class="fn">searchBST</span>(<span class="tp">TreeNode</span><span class="op">*</span> root, <span class="kw">int</span> val) {
+    <span class="kw">if</span> (!root || root<span class="op">-&gt;</span>val <span class="op">==</span> val) <span class="kw">return</span> root;
+    <span class="kw">if</span> (val <span class="op">&lt;</span> root<span class="op">-&gt;</span>val) <span class="kw">return</span> <span class="fn">searchBST</span>(root<span class="op">-&gt;</span>left,  val);
+    <span class="kw">else</span>                  <span class="kw">return</span> <span class="fn">searchBST</span>(root<span class="op">-&gt;</span>right, val);
+}
+
+<span class="cm">// ── INSERT (LC 701) ────────────────────────────────</span>
+<span class="tp">TreeNode</span><span class="op">*</span> <span class="fn">insertIntoBST</span>(<span class="tp">TreeNode</span><span class="op">*</span> root, <span class="kw">int</span> val) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span> <span class="kw">new</span> <span class="tp">TreeNode</span>(val); <span class="cm">// create at correct leaf</span>
+    <span class="kw">if</span> (val <span class="op">&lt;</span> root<span class="op">-&gt;</span>val) root<span class="op">-&gt;</span>left  <span class="op">=</span> <span class="fn">insertIntoBST</span>(root<span class="op">-&gt;</span>left,  val);
+    <span class="kw">else</span>                 root<span class="op">-&gt;</span>right <span class="op">=</span> <span class="fn">insertIntoBST</span>(root<span class="op">-&gt;</span>right, val);
+    <span class="kw">return</span> root;
+}
+
+<span class="cm">// ── VALIDATE BST (LC 98) — pass valid range ─────────</span>
+<span class="kw">bool</span> <span class="fn">isValid</span>(<span class="tp">TreeNode</span><span class="op">*</span> node, <span class="kw">long</span> lo, <span class="kw">long</span> hi) {
+    <span class="kw">if</span> (!node) <span class="kw">return</span> <span class="nm">true</span>;
+    <span class="kw">if</span> (node<span class="op">-&gt;</span>val <span class="op">&lt;=</span> lo || node<span class="op">-&gt;</span>val <span class="op">&gt;=</span> hi) <span class="kw">return</span> <span class="nm">false</span>;
+    <span class="kw">return</span> <span class="fn">isValid</span>(node<span class="op">-&gt;</span>left,  lo,         node<span class="op">-&gt;</span>val)
+        &amp;&amp; <span class="fn">isValid</span>(node<span class="op">-&gt;</span>right, node<span class="op">-&gt;</span>val, hi);
+}
+<span class="kw">bool</span> <span class="fn">isValidBST</span>(<span class="tp">TreeNode</span><span class="op">*</span> root) {
+    <span class="kw">return</span> <span class="fn">isValid</span>(root, LONG_MIN, LONG_MAX); <span class="cm">// use LONG to handle INT_MAX</span>
+}
+
+<span class="cm">// ── KTH SMALLEST (LC 230) — inorder = sorted ────────</span>
+<span class="kw">int</span> k_count <span class="op">=</span> <span class="nm">0</span>, ans <span class="op">=</span> <span class="nm">0</span>;
+<span class="kw">void</span> <span class="fn">inorder</span>(<span class="tp">TreeNode</span><span class="op">*</span> node) {
+    <span class="kw">if</span> (!node) <span class="kw">return</span>;
+    <span class="fn">inorder</span>(node<span class="op">-&gt;</span>left);
+    <span class="kw">if</span> (<span class="op">++</span>k_count <span class="op">==</span> k) { ans <span class="op">=</span> node<span class="op">-&gt;</span>val; <span class="kw">return</span>; }
+    <span class="fn">inorder</span>(node<span class="op">-&gt;</span>right);
+}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl cl5">// LCA in BST — Smarter than Binary Tree</div>
+<div class="code"><span class="cm">// ── LCA IN BST (LC 235) ────────────────────────────</span>
+<span class="cm">// In BST, LCA is the first node where p and q diverge</span>
+<span class="tp">TreeNode</span><span class="op">*</span> <span class="fn">lowestCommonAncestor</span>(<span class="tp">TreeNode</span><span class="op">*</span> root,
+                                  <span class="tp">TreeNode</span><span class="op">*</span> p, <span class="tp">TreeNode</span><span class="op">*</span> q) {
+    <span class="kw">if</span> (p<span class="op">-&gt;</span>val <span class="op">&lt;</span> root<span class="op">-&gt;</span>val &amp;&amp; q<span class="op">-&gt;</span>val <span class="op">&lt;</span> root<span class="op">-&gt;</span>val)
+        <span class="kw">return</span> <span class="fn">lowestCommonAncestor</span>(root<span class="op">-&gt;</span>left, p, q);   <span class="cm">// both left</span>
+    <span class="kw">if</span> (p<span class="op">-&gt;</span>val <span class="op">&gt;</span> root<span class="op">-&gt;</span>val &amp;&amp; q<span class="op">-&gt;</span>val <span class="op">&gt;</span> root<span class="op">-&gt;</span>val)
+        <span class="kw">return</span> <span class="fn">lowestCommonAncestor</span>(root<span class="op">-&gt;</span>right, p, q);  <span class="cm">// both right</span>
+    <span class="kw">return</span> root;                                           <span class="cm">// split → LCA!</span>
+}</div>
+  </div>
+
+  <div class="prob-list">
+    <div class="prob"><span class="diff dE">EASY</span><span class="prob-name">LC 700 — Search in BST</span><span class="prob-tag">BST search</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 98 — Validate BST</span><span class="prob-tag">range check</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 230 — Kth Smallest in BST</span><span class="prob-tag">inorder</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 450 — Delete Node in BST</span><span class="prob-tag">inorder successor</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 530 — Min Absolute Diff in BST</span><span class="prob-tag">inorder prev</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PATTERN 6 — CONSTRUCTION
+═══════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="sec-header">
+    <div class="sec-num sn6">06</div>
+    <div>
+      <div class="sec-title">Tree Construction — Build from Traversals</div>
+      <div class="sec-desc">// Reconstruct a tree from preorder+inorder or postorder+inorder arrays</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl cl6">// The Core Intuition</div>
+    <div class="insight">
+      <strong>Preorder:</strong> First element is always the ROOT.<br>
+      <strong>Inorder:</strong> Root splits array — everything left of root is the LEFT subtree, everything right is the RIGHT subtree.<br><br>
+      <strong>Algorithm:</strong> Root = preorder[0]. Find root in inorder. Split inorder into left/right. Recurse.
+    </div>
+<div class="code"><span class="cm">// ── BUILD FROM PREORDER + INORDER (LC 105) ─────────</span>
+<span class="tp">TreeNode</span><span class="op">*</span> <span class="fn">build</span>(<span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;&amp;</span> pre, <span class="tp">vector</span><span class="op">&lt;</span><span class="kw">int</span><span class="op">&gt;&amp;</span> in,
+                  <span class="kw">int</span> preL, <span class="kw">int</span> preR, <span class="kw">int</span> inL, <span class="kw">int</span> inR,
+                  <span class="tp">unordered_map</span><span class="op">&lt;</span><span class="kw">int</span>,<span class="kw">int</span><span class="op">&gt;&amp;</span> idx) {
+    <span class="kw">if</span> (preL <span class="op">&gt;</span> preR) <span class="kw">return</span> <span class="nm">nullptr</span>;
+
+    <span class="kw">int</span> rootVal <span class="op">=</span> pre[preL];            <span class="cm">// ① root = first in preorder</span>
+    <span class="tp">TreeNode</span><span class="op">*</span> root <span class="op">=</span> <span class="kw">new</span> <span class="tp">TreeNode</span>(rootVal);
+
+    <span class="kw">int</span> mid <span class="op">=</span> idx[rootVal];             <span class="cm">// ② find root in inorder</span>
+    <span class="kw">int</span> leftSize <span class="op">=</span> mid <span class="op">-</span> inL;          <span class="cm">// ③ size of left subtree</span>
+
+    root<span class="op">-&gt;</span>left  <span class="op">=</span> <span class="fn">build</span>(pre, in,
+                   preL<span class="op">+</span><span class="nm">1</span>, preL<span class="op">+</span>leftSize,  <span class="cm">// ④ left preorder range</span>
+                   inL,   mid<span class="op">-</span><span class="nm">1</span>, idx);       <span class="cm">// ④ left inorder range</span>
+    root<span class="op">-&gt;</span>right <span class="op">=</span> <span class="fn">build</span>(pre, in,
+                   preL<span class="op">+</span>leftSize<span class="op">+</span><span class="nm">1</span>, preR,  <span class="cm">// ⑤ right preorder range</span>
+                   mid<span class="op">+</span><span class="nm">1</span>, inR, idx);         <span class="cm">// ⑤ right inorder range</span>
+    <span class="kw">return</span> root;
+}
+<span class="cm">// Use hashmap for O(1) inorder index lookup → overall O(n)</span></div>
+  </div>
+
+  <!-- Serialize / Deserialize -->
+  <div class="card">
+    <div class="card-lbl cl6">// Serialize &amp; Deserialize (LC 297)</div>
+<div class="code"><span class="cm">// Serialize: preorder with null markers</span>
+<span class="kw">void</span> <span class="fn">serial</span>(<span class="tp">TreeNode</span><span class="op">*</span> root, <span class="tp">string</span><span class="op">&amp;</span> s) {
+    <span class="kw">if</span> (!root) { s <span class="op">+=</span> <span class="st">"#,"</span>; <span class="kw">return</span>; }    <span class="cm">// null = "#"</span>
+    s <span class="op">+=</span> to_string(root<span class="op">-&gt;</span>val) <span class="op">+</span> <span class="st">","</span>;
+    <span class="fn">serial</span>(root<span class="op">-&gt;</span>left, s);
+    <span class="fn">serial</span>(root<span class="op">-&gt;</span>right, s);
+}
+
+<span class="cm">// Deserialize: rebuild using the same preorder logic</span>
+<span class="tp">TreeNode</span><span class="op">*</span> <span class="fn">deserial</span>(<span class="tp">queue</span><span class="op">&lt;</span><span class="tp">string</span><span class="op">&gt;&amp;</span> q) {
+    <span class="tp">string</span> val <span class="op">=</span> q.front(); q.pop();
+    <span class="kw">if</span> (val <span class="op">==</span> <span class="st">"#"</span>) <span class="kw">return</span> <span class="nm">nullptr</span>;
+    <span class="tp">TreeNode</span><span class="op">*</span> node <span class="op">=</span> <span class="kw">new</span> <span class="tp">TreeNode</span>(stoi(val));
+    node<span class="op">-&gt;</span>left  <span class="op">=</span> <span class="fn">deserial</span>(q);
+    node<span class="op">-&gt;</span>right <span class="op">=</span> <span class="fn">deserial</span>(q);
+    <span class="kw">return</span> node;
+}</div>
+    <div class="tip"><strong>Key insight:</strong> Preorder naturally encodes the tree — you know exactly when to recurse left vs right because null markers tell you where subtrees end.</div>
+  </div>
+
+  <div class="prob-list">
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 105 — Build from Preorder + Inorder</span><span class="prob-tag">construction</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 106 — Build from Postorder + Inorder</span><span class="prob-tag">construction</span></div>
+    <div class="prob"><span class="diff dH">HARD</span><span class="prob-name">LC 297 — Serialize &amp; Deserialize</span><span class="prob-tag">preorder + nulls</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 108 — Sorted Array to BST</span><span class="prob-tag">mid as root</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 654 — Max Binary Tree</span><span class="prob-tag">max as root</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PATTERN 7 — LCA & ANCESTORS
+═══════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="sec-header">
+    <div class="sec-num sn7">07</div>
+    <div>
+      <div class="sec-title">LCA &amp; Ancestor Problems</div>
+      <div class="sec-desc">// Lowest Common Ancestor — the most reused tree subroutine in interviews</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl cl7">// LCA — Binary Tree (LC 236)</div>
+    <div class="insight">
+      <strong>Core idea:</strong> A node is the LCA if:<br>
+      → It equals p or q itself, OR<br>
+      → p is in its left subtree AND q is in its right subtree (or vice versa)<br><br>
+      The function returns the node if found, else null. If both children return non-null → current node is LCA.
+    </div>
+<div class="code"><span class="cm">// ── LCA IN BINARY TREE (LC 236) ────────────────────</span>
+<span class="tp">TreeNode</span><span class="op">*</span> <span class="fn">lca</span>(<span class="tp">TreeNode</span><span class="op">*</span> root, <span class="tp">TreeNode</span><span class="op">*</span> p, <span class="tp">TreeNode</span><span class="op">*</span> q) {
+    <span class="kw">if</span> (!root)         <span class="kw">return</span> <span class="nm">nullptr</span>;    <span class="cm">// not found</span>
+    <span class="kw">if</span> (root <span class="op">==</span> p || root <span class="op">==</span> q) <span class="kw">return</span> root; <span class="cm">// found one</span>
+
+    <span class="tp">TreeNode</span><span class="op">*</span> L <span class="op">=</span> <span class="fn">lca</span>(root<span class="op">-&gt;</span>left, p, q);
+    <span class="tp">TreeNode</span><span class="op">*</span> R <span class="op">=</span> <span class="fn">lca</span>(root<span class="op">-&gt;</span>right, p, q);
+
+    <span class="kw">if</span> (L &amp;&amp; R) <span class="kw">return</span> root;  <span class="cm">// p in left, q in right → root is LCA</span>
+    <span class="kw">return</span> L ? L : R;          <span class="cm">// bubble up the found node</span>
+}
+
+<span class="cm">// ── ALL NODES DISTANCE K FROM TARGET (LC 863) ──────</span>
+<span class="cm">// Step 1: Build parent map with BFS</span>
+<span class="cm">// Step 2: BFS from target node with distance tracking</span>
+<span class="tp">unordered_map</span><span class="op">&lt;</span><span class="tp">TreeNode</span><span class="op">*</span>, <span class="tp">TreeNode</span><span class="op">*&gt;</span> parent;
+<span class="kw">void</span> <span class="fn">buildParent</span>(<span class="tp">TreeNode</span><span class="op">*</span> node, <span class="tp">TreeNode</span><span class="op">*</span> par) {
+    <span class="kw">if</span> (!node) <span class="kw">return</span>;
+    parent[node] <span class="op">=</span> par;
+    <span class="fn">buildParent</span>(node<span class="op">-&gt;</span>left, node);
+    <span class="fn">buildParent</span>(node<span class="op">-&gt;</span>right, node);
+}
+<span class="cm">// Then BFS in 3 directions: left, right, parent</span>
+
+<span class="cm">// ── GOOD NODES (LC 1448) — pass max from root ───────</span>
+<span class="kw">int</span> <span class="fn">countGood</span>(<span class="tp">TreeNode</span><span class="op">*</span> node, <span class="kw">int</span> maxSoFar) {
+    <span class="kw">if</span> (!node) <span class="kw">return</span> <span class="nm">0</span>;
+    <span class="kw">int</span> good <span class="op">=</span> (node<span class="op">-&gt;</span>val <span class="op">&gt;=</span> maxSoFar) ? <span class="nm">1</span> : <span class="nm">0</span>;
+    maxSoFar <span class="op">=</span> max(maxSoFar, node<span class="op">-&gt;</span>val);
+    <span class="kw">return</span> good
+         <span class="op">+</span> <span class="fn">countGood</span>(node<span class="op">-&gt;</span>left, maxSoFar)
+         <span class="op">+</span> <span class="fn">countGood</span>(node<span class="op">-&gt;</span>right, maxSoFar);
+}</div>
+    <div class="key-box">
+      <div class="kb-title">🔑 LCA is used inside many harder problems</div>
+      <div class="kb-text">
+        Distance between two nodes = <code>dist(root,p) + dist(root,q) - 2*dist(root,LCA)</code><br>
+        Whenever you see "find relationship between two nodes in a tree", think LCA first.
+      </div>
+    </div>
+  </div>
+
+  <div class="prob-list">
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 236 — LCA of Binary Tree</span><span class="prob-tag">classic LCA</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 235 — LCA of BST</span><span class="prob-tag">BST property</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 863 — All Nodes Distance K</span><span class="prob-tag">parent map + BFS</span></div>
+    <div class="prob"><span class="diff dM">MED</span><span class="prob-name">LC 1448 — Count Good Nodes</span><span class="prob-tag">pass max down</span></div>
+    <div class="prob"><span class="diff dH">HARD</span><span class="prob-name">LC 1483 — Kth Ancestor of Tree Node</span><span class="prob-tag">binary lifting</span></div>
+  </div>
+</div>
+
+<!-- ══════════════ MASTER SUMMARY ══════════════ -->
+<div class="summary">
+  <div style="font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:6px;">🗺 Master Pattern Map — How to Solve ANY Tree Problem</div>
+  <div style="font-family:'Fira Code',monospace;font-size:11.5px;color:var(--text2);margin-bottom:20px;">Ask these questions in order when you see a new tree problem:</div>
+  <div class="sum-grid">
+    <div class="sum-card">
+      <div class="sum-num" style="color:var(--accent)">01</div>
+      <div class="sum-title">Traversals</div>
+      <div class="sum-when">Need all values in a specific order? → Pick inorder/pre/post/level</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-num" style="color:var(--green)">02</div>
+      <div class="sum-title">DFS Return-Up</div>
+      <div class="sum-when">Computing height, balance, diameter, sum? → Return value upward</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-num" style="color:var(--purple)">03</div>
+      <div class="sum-title">BFS Level Order</div>
+      <div class="sum-when">Level-wise processing, min depth, right view? → Queue + size trick</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-num" style="color:var(--amber)">04</div>
+      <div class="sum-title">Path Problems</div>
+      <div class="sum-when">Root-to-leaf sum? → Pass down. Any-to-any max? → Global var + return one side</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-num" style="color:var(--teal)">05</div>
+      <div class="sum-title">BST Property</div>
+      <div class="sum-when">Given a BST? → ALWAYS use left &lt; root &lt; right. Inorder = sorted.</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-num" style="color:var(--pink)">06</div>
+      <div class="sum-title">Construction</div>
+      <div class="sum-when">Given traversal arrays? → Preorder root splits inorder left/right</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-num" style="color:var(--red)">07</div>
+      <div class="sum-title">LCA / Ancestors</div>
+      <div class="sum-when">Relationship between two nodes? → LCA. Return node if found, bubble up.</div>
+    </div>
+  </div>
+  <div class="warn" style="margin-top:16px;">
+    <strong>Universal Template:</strong> Every tree function starts with <code>if (!root) return BASE_CASE;</code> — never forget the null check. The base case IS the pattern.
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<script>
+function show(n, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById('s' + n).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
